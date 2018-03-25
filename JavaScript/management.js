@@ -12,7 +12,7 @@ var login_registration = {
 				}
 				$.post("server/api/",_login, function(data) {
 					if(data == 1) {
-						window.location.href = window.location.hostname + "/dashboard";
+						window.location.href = "/dashboard";
 					}
 					else {
 						var _message = document.getElementById('message');
