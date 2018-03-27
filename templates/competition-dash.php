@@ -16,7 +16,7 @@
 		</div>
 		<div class = "content">
 			<?php
-				if($uri == "register-steps") include_once("./templates/register-steps.php");
+				if($uri == "register-steps" || $uri == "dashboard") include_once("./templates/register-steps.php");
 				if($uri == "profile") include_once("./templates/user-profile.php");
 			?>
 		</div>

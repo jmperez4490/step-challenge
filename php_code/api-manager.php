@@ -2,7 +2,7 @@
 	class apiManager {
 		private $conn = null;
 		function __construct() {
-			$this -> conn = new mysqli();
+			$this -> conn = new mysqli("localhost","root","stepchallenge","step-challenge");
 		}
 
 		function functionControl($data) {
@@ -145,7 +145,7 @@
 		}
 
 		function getProfileInfo() {
-			$userInfo = "SELECT u.first_name, u.username, team_name, c.first_name AS team_captain FROM `step-challenge`._userDB u INNER JOIN  `step-challenge`.team_list t ON u.team = team_id INNER JOIN `step-challenge`._userDB c  ON t.team_captain = c._id WHERE u._id = '{$_SESSION['_id']}'";
+			$userInfo = "SELECT u.first_name, u.username, team_name, null AS team_captain FROM `step-challenge`._userDB u INNER JOIN  `step-challenge`.team_list t ON u.team = team_id WHERE u._id = '{$_SESSION['_id']}'";
 			$result = $this -> conn -> query($userInfo);
 			if($result -> num_rows > 0) {
 				$responds = null;

@@ -1,11 +1,13 @@
 <?php
 require_once('php_code/api-manager.php');
 session_start();
-$path = "http://$_SERVER[HTTP_HOST]/step-challenge/";
-$uri = str_replace("/step-challenge/","","$_SERVER[REQUEST_URI]");
+$path = "http://$_SERVER[HTTP_HOST]/";
+$uri = "$_SERVER[REQUEST_URI]";
+if($uri != "/server/api/")
+	$uri = str_replace("/","","$_SERVER[REQUEST_URI]");
 $api = new apiManager();
 
-if($uri == "server/api/") {
+if($uri == "/server/api/") {
 	if($_POST['action'] == "login") {
 		$responds = $api -> functionControl($_POST);
 		if(array_key_exists('token', $responds)) {
