@@ -93,9 +93,9 @@ var calendar_builder = {
 				}
 				if(_start <= _last) {
 					if(_start == this._date.getDate() && this._curr_month == this._date.getMonth() && this._year == this._date.getFullYear())
-						_days += "<td class = 'c-month today'><span>"+(_start )+"</span><span class = 'steps'>"+_stepsDone+"</span></td>";
+						_days += "<td class = 'c-month today'><span>"+(_start )+"</span><span class = 'steps'>"+_stepsDone+"</span><div class = 'rec-mess'>Click Here</div></td>";
 					else
-						_days += "<td class = 'c-month'><span>"+(_start )+"</span><span class = 'steps'>"+_stepsDone+"</span></td>";
+						_days += "<td class = 'c-month'><span>"+(_start )+"</span><span class = 'steps'>"+_stepsDone+"</span><div class = 'rec-mess'>Click Here</div></td>";
 					_start++;
 				}
 				else {
@@ -142,8 +142,9 @@ var calendar_builder = {
 		{
 			(function(elm) {
 				table[t].onclick = function(event) {
-					if(event.target.className.indexOf('c-month') > -1)
+					if(event.target.className.indexOf('c-month') > -1 || event.target.className.indexOf('rec-mess') > -1 )
 					{
+						this.querySelector('.rec-mess').style.display = "none";
 						var _day = this.querySelector('span').innerText.padStart(2,0);
 						var _month = String(elm._curr_month + 1);
 						_month = _month.padStart(2,0);
