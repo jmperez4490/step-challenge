@@ -117,7 +117,28 @@
 				$this -> conn -> query($addStep);
 				if($this -> conn -> affected_rows == 1 || $this -> conn -> affected_rows == 2){
 					$this -> conn -> commit();
-					return json_encode(array('result'=>TRUE));
+					$info['week'] = $data['timestamp'];
+					$info = $this -> getWeekInfo($info);
+					
+					$checkStatus = "SELECT SUM(t.steps) as steps FROM `step-challenge`.step_tracker t WHERE t.walker_id = '{$_SESSION['_id']}' AND t.week_date BETWEEN CAST('{$info['start']}' AS DATE) AND CAST('{$info['end']}' AS DATE)  GROUP BY t.walker_id LIMIT 1";
+					$result = $this -> conn -> query($checkStatus);
+					$responds = 0;
+					if($result -> num_rows > 0) {
+						while($row  = $result -> fetch_assoc()) {
+							$responds += $row['steps'];
+						}
+					}
+					$goal = "SELECT g.steps AS steps FROM `step-challenge`.step_goal g WHERE g.week_number = '{$info['week']}'";
+					$_goal = $this -> conn -> query($goal);
+					$goal = 0;
+					if($_goal -> num_rows > 0) {
+						while($row  = $_goal -> fetch_assoc()) {
+							$goal += $row['steps'];
+						}
+					}
+					$info['status'] = $responds - $goal;
+					$info['result'] = TRUE;
+					return json_encode($info);
 				}
 				else {
 					$this -> conn -> rollback();
@@ -142,6 +163,17 @@
 			}
 			else
 				return json_encode(array());
+		}
+
+		function getWeekInfo($data) {
+			$dateTime = new DateTime();
+			$date = new DateTime($data['week']);
+			$ret['week'] =  $date -> format('W');
+			$data['year'] = $date -> format('Y');
+			$ret['start'] = $dateTime -> setISODate($data['year'],$ret['week']) -> format('Y-m-d');
+			$ret['end'] = $dateTime -> modify('+6 days') -> format('Y-m-d');
+
+			return $ret;
 		}
 
 		function getProfileInfo() {

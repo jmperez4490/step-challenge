@@ -10,6 +10,8 @@ body {
 	margin:auto;
 	img {
 		height:100vh;
+		margin:auto;
+		display:block;
 	}
 	.user-registration,
 	.login {
@@ -99,7 +101,6 @@ body {
 	left:0;
 	right:0;
 	width: 90%;
-	height:90%;
 	margin:auto;
 	bottom:0;
 	background:#ffffff;
@@ -171,7 +172,6 @@ body {
 			width: 13%;
 			border:1px solid #ebebeb;
 			padding:10px 5px;
-			height:100px;
 			vertical-align:text-top;
 			cursor:pointer;
 		}
@@ -200,12 +200,13 @@ body {
 			margin-top:10px;
 		}
 		.steps {
-			display:block;
+			display:inline-block;
 			font-size:20px;
 			text-align:center;
 			color:#cc0c45;
 			font-family:'Karma',sans-serif;
 			border-bottom:1px solid #000000;
+			width:80%;
 		}
 		.acceptance {
 			div:hover {

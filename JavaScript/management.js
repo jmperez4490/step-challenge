@@ -172,6 +172,8 @@ var calendar_builder = {
 								steps:_steps,
 								timestamp:_time
 							},function(data) {
+
+									console.log(data);
 								if(data.result) {
 									elm.getElementsByClassName('steps')[0].innerText = _steps;
 								}
