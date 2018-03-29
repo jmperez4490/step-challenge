@@ -165,7 +165,7 @@ var calendar_builder = {
 					if(event.target.className.indexOf("record") > -1)
 					{
 						var _time = this.querySelectorAll('.record')[1].getAttribute('date-id');
-						var _steps = this.getElementsByClassName('editable')[0].innerText;
+						var _steps = this.getElementsByClassName('editable')[0].innerText.replace(",","");
 						(function(elm) {
 							$.post("server/api/",{ 
 								action:"addSteps",
@@ -175,7 +175,14 @@ var calendar_builder = {
 
 									console.log(data);
 								if(data.result) {
+
 									elm.getElementsByClassName('steps')[0].innerText = _steps;
+									if(data.status > 0) {
+										document.getElementsByClassName('fireworks')[0].style.display = "block";
+										window.setTimeout(function(){
+											document.getElementsByClassName('fireworks')[0].style.display = "none";
+										},5000);
+									}
 								}
 							},"json");
 						})(this);

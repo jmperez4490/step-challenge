@@ -23,3 +23,8 @@
 <script type="text/javascript">
 	calendar_builder._init();
 </script>
+<div class = "fireworks">
+	<canvas id="canvas">Canvas is not supported in your browser.</canvas>
+	<img src = "https://vignette.wikia.nocookie.net/glee/images/2/25/You-rock-38.gif/revision/latest?cb=20111103220434">
+</div>
+<script type="text/javascript" src = "<?=$path?>JavaScript/fireworks.js"></script>
