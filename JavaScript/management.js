@@ -54,10 +54,13 @@ var calendar_builder = {
 	_year: null,
 	_curr_month:null,
 	_date: null,
+	_modal: null,
+	_pick_date: null,
 	_init: function() {
 		this._date = new Date();
 		this._year = this._date.getFullYear();
 		this._curr_month = this._date.getMonth();
+		this._modal = document.getElementsByClassName('step-modal')[0];
 		this.gatherInfo();
 		var _next = document.getElementsByClassName('next')[0];
 		var _prev = document.getElementsByClassName('prev')[0];
@@ -68,7 +71,19 @@ var calendar_builder = {
 			_prev.onclick = function() {
 				elm.prevMonth();
 			}
+			window.onclick = function(event) {
+				if(event.target == elm._modal) {
+					elm._modal.style.display = "none";
+				}
+			}
+			document.getElementsByClassName('close')[0].onclick = function() {
+				elm._modal.style.display = "none";
+			}
+			document.getElementsByClassName('undo')[0].onclick = function() {
+				elm._modal.style.display = "none";
+			}
 		})(this);
+
 	},
 	generateCalendar: function(stepCount) {
 		var _first = new Date(this._year, this._curr_month,1).getDay();
@@ -88,14 +103,19 @@ var calendar_builder = {
 				_first = 0;
 			for (var _week = _first; _week < 7; _week ++) {
 				var _stepsDone = stepCount[_start];
+				var color = "";
 				if(typeof(_stepsDone) == "undefined") {
-					_stepsDone = 0;
+					_stepsDone = "";
+				}
+				else {
+					_stepsDone = "<div class = 'steps'>"+_stepsDone + "</div>";
+					color = "style = 'background:#68687d91;'";
 				}
 				if(_start <= _last) {
 					if(_start == this._date.getDate() && this._curr_month == this._date.getMonth() && this._year == this._date.getFullYear())
-						_days += "<td class = 'c-month today'><span>"+(_start )+"</span><span class = 'steps'>"+_stepsDone+"</span><div class = 'rec-mess'>Click Here</div></td>";
+						_days += "<td class = 'c-month today' "+color+"><span>"+(_start )+"</span>"+_stepsDone+"</td>";
 					else
-						_days += "<td class = 'c-month'><span>"+(_start )+"</span><span class = 'steps'>"+_stepsDone+"</span><div class = 'rec-mess'>Click Here</div></td>";
+						_days += "<td class = 'c-month' "+color+"><span>"+(_start )+"</span>"+_stepsDone+"</td>";
 					_start++;
 				}
 				else {
@@ -134,7 +154,6 @@ var calendar_builder = {
 				elm.generateCalendar(data);
 			},"json");
 		})(this);
-		
 	},
 	recordSteps: function() {
 		var table = document.querySelectorAll(".c-month");
@@ -142,59 +161,43 @@ var calendar_builder = {
 		{
 			(function(elm) {
 				table[t].onclick = function(event) {
-					if(event.target.className.indexOf('c-month') > -1 || event.target.className.indexOf('rec-mess') > -1 )
-					{
-						this.querySelector('.rec-mess').style.display = "none";
-						var _day = this.querySelector('span').innerText.padStart(2,0);
-						var _month = String(elm._curr_month + 1);
-						_month = _month.padStart(2,0);
-						var tag = elm._year+ "-"+_month + "-"+_day ;
-						if( this.querySelector('.editable') == null) {
-							this.innerHTML = this.innerHTML + `
-							<div contenteditable = true class = 'editable'></div>
-							<div class = "acceptance">
-								<div class = "record">
-									<img src = './images/accept.svg' class = "record good" date-id = "`+tag+`">
-								</div>
-								<div class = "undo">
-									<img src = './images/reject.svg' class = "undo bad" date-id = "`+tag+`">
-								</div>
-							</div>`;
-						}
-					}
-					if(event.target.className.indexOf("record") > -1)
-					{
-						var _time = this.querySelectorAll('.record')[1].getAttribute('date-id');
-						var _steps = this.getElementsByClassName('editable')[0].innerText.replace(",","");
-						(function(elm) {
-							$.post("server/api/",{ 
-								action:"addSteps",
-								steps:_steps,
-								timestamp:_time
-							},function(data) {
-
-									console.log(data);
-								if(data.result) {
-
-									elm.getElementsByClassName('steps')[0].innerText = _steps;
-									if(data.status > 0) {
-										document.getElementsByClassName('fireworks')[0].style.display = "block";
-										window.setTimeout(function(){
-											document.getElementsByClassName('fireworks')[0].style.display = "none";
-										},5000);
-									}
-								}
-							},"json");
-						})(this);
-					}
-					if(event.target.className.indexOf("undo") > -1) {
-						window.location.reload();
-					}
-					
+					elm._modal.style.display = "block"
+					document.getElementsByClassName('step-count')[0].value = "";
+					var _day = this.querySelector('span').innerText.padStart(2,0);
+					var _month = String(elm._curr_month + 1);
+					_month = _month.padStart(2,0);
+					elm._pick_date = elm._year+ "-"+_month + "-"+_day;
+					var tag = _month + "/"+_day+ "/"+elm._year;
+					document.getElementById('date').innerHTML = tag;
+					elm.addSteps(this);
 				}
 			})(this);
-			
 		}
+	},
+	addSteps: function(_caldate) {
+		(function(elm,_cd) {
+			document.getElementsByClassName('record')[0].onclick = function() {
+				var _steps = document.getElementsByClassName('step-count')[0].value;
+				$.post("server/api/",{ 
+					action:"addSteps",
+					steps:_steps,
+					timestamp:elm._pick_date
+				},function(data) {
+					elm._modal.style.display = "none";
+					if(data.result) {
+						_cd.style.background = "#68687d91";
+						_cd.innerHTML += "<span class = 'steps'>"+_steps+"</span>";
+						if(data.status > 0) {
+							document.getElementsByClassName('conquering')[0].style.display = "block";
+							window.setTimeout(function(){
+								document.getElementsByClassName('conquering')[0].style.display = "none";
+							},5000);
+						}
+					}
+				},"json");
+			}
+
+		})(this,_caldate);
 	}
 }
 

@@ -2,10 +2,10 @@
 	class apiManager {
 		private $conn = null;
 		function __construct() {
-			$this -> conn = new mysqli("localhost","root","stepchallenge","step-challenge");
+			$this -> conn = new mysqli("localhost","root","testingplatform","step-challenge");
 		}
 
-		function functionControl($data) {
+		function Control($data) {
 			$data = $this -> cleanString($data);
 			switch ($data['action']) {
 				case 'login':
@@ -44,7 +44,7 @@
 		}
 
 		private function login_account($data) {
-			$user = "SELECT first_name, last_name, _id FROM `step-challenge`._userDB WHERE username = '{$data['user-name']}' and password = PASSWORD('{$data['user-password']}') LIMIT 1";
+			$user = "SELECT first_name, last_name, _id, team FROM `step-challenge`._userDB WHERE username = '{$data['user-name']}' and password = PASSWORD('{$data['user-password']}') LIMIT 1";
 			$result = $this -> conn -> query($user);
 			if($result -> num_rows > 0) {
 				$responds = null;
@@ -185,6 +185,54 @@
 					$responds = $row;
 				}
 				return $responds;
+			}
+		}
+
+		function teamStatus() {
+			$teamStatus = "SELECT u.first_name, SUM(t.steps) AS steps, g.steps as goal, WEEK(week_date,1) AS week FROM `step-challenge`.`step_tracker` t INNER JOIN _userDB u ON walker_id = u._id INNER JOIN `step-challenge`.step_goal g ON WEEK(week_date,1) = g.week_number WHERE u.team = '{$_SESSION['team']}' GROUP BY walker_id, WEEK(week_date,1),g.steps ORDER BY steps ASC, week ASC";
+			$result = $this -> conn -> query($teamStatus);
+			$responds = array();
+			if($result -> num_rows > 0) {
+				while($row = $result -> fetch_assoc()) {
+					$week = $row['week'];
+					unset($row['week']);
+					if(array_key_exists($week, $responds))
+					{
+						array_push($responds[$week], $row);
+					}
+					else
+					{
+						$responds[$week] = array($row);
+					}
+					
+				}
+				return $responds;
+			}
+		}
+
+		function competitorStatus() {
+			$competitor = "SELECT team_name, IF((SUM(t.steps) - g.steps) > 0, 'Completed', 'Pending') AS steps, WEEK(week_date,1) AS week FROM `step-challenge`.`step_tracker` t INNER JOIN `step-challenge`._userDB u ON walker_id = u._id INNER JOIN `step-challenge`.team_list on team = team_id INNER JOIN `step-challenge`.step_goal g ON WEEK(week_date,1) = g.week_number GROUP BY team, WEEK(week_date,1),team_name, g.steps ORDER BY steps ASC";
+			$result = $this -> conn -> query($competitor);
+			$responds = array();
+			if($result -> num_rows > 0) {
+				while($row = $result -> fetch_assoc()) {
+					$week = $row['week'];
+					unset($row['week']);
+					if(array_key_exists($week, $responds))
+					{
+						$team_name = $row['team_name'];
+						$responds[$week][$team_name] = $row['steps'];
+					}
+					else
+					{
+						$team_name = $row['team_name'];
+						$responds[$week][$team_name] = $row['steps'];
+					}
+				}
+				return $responds;
+			}
+			else {
+				echo $this -> conn -> error;
 			}
 		}
 	}

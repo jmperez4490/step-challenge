@@ -9,7 +9,7 @@ $api = new apiManager();
 
 if($uri == "/server/api/") {
 	if($_POST['action'] == "login") {
-		$responds = $api -> functionControl($_POST);
+		$responds = $api -> Control($_POST);
 		if(array_key_exists('token', $responds)) {
 			$_SESSION = $responds;
 			echo TRUE;
@@ -20,7 +20,7 @@ if($uri == "/server/api/") {
 		return;
 	}
 	else 
-		return $api -> functionControl($_POST);
+		return $api -> Control($_POST);
 }
 elseif(array_key_exists('token', $_SESSION) == FALSE and strlen($uri) > 1 and $uri != 'register')
 {
@@ -36,6 +36,7 @@ elseif ($uri == "log-out") {
 		<link rel="stylesheet" type="text/css" href="<?=$path?>stylesheet/home.css">
 		<link href="https://fonts.googleapis.com/css?family=Karma:400,600" rel="stylesheet">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta charset="utf-8">
 		<script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 		<script type="text/javascript" src = "<?=$path?>JavaScript/management.js"></script>
 	</head>
@@ -54,6 +55,7 @@ elseif ($uri == "log-out") {
 					 	case "register":
 					 		include_once('./templates/register-user.php');
 					 		break;
+					 	case "team-progress":
 					 	case "dashboard":
 					 	case "register-steps":
 					 	case "profile":
