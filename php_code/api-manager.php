@@ -211,7 +211,7 @@
 		}
 
 		function competitorStatus() {
-			$competitor = "SELECT team_name, IF((SUM(t.steps) - g.steps) > 0, 'Completed', 'Pending') AS steps, WEEK(week_date,1) AS week FROM `step-challenge`.`step_tracker` t INNER JOIN `step-challenge`._userDB u ON walker_id = u._id INNER JOIN `step-challenge`.team_list on team = team_id INNER JOIN `step-challenge`.step_goal g ON WEEK(week_date,1) = g.week_number GROUP BY team, WEEK(week_date,1),team_name, g.steps ORDER BY steps ASC";
+			$competitor = "SELECT team_name, ((SUM(t.steps) / g.steps)*100)  AS steps, WEEK(week_date,1) AS week FROM `step-challenge`.`step_tracker` t INNER JOIN `step-challenge`._userDB u ON walker_id = u._id INNER JOIN `step-challenge`.team_list on team = team_id INNER JOIN `step-challenge`.step_goal g ON WEEK(week_date,1) = g.week_number GROUP BY team, WEEK(week_date,1),team_name, g.steps ORDER BY steps ASC";
 			$result = $this -> conn -> query($competitor);
 			$responds = array();
 			if($result -> num_rows > 0) {

@@ -12,16 +12,16 @@
 
 		<tr>
 			<th>Teammate's Name</th>
-			<th>Completed Steps</th>
-			<th>Required Steps</th>
+			<th>Status</th>
+			<th>Steps Completed</th>
 		</tr>
 		<?php
 			foreach ($value as $name => $steps) {
 	?>
 			<tr>
 				<td><?=$steps['first_name']?></td>
-				<td><?=number_format($steps['steps'])?></td>
-				<td><?=number_format($steps['goal'])?></td>
+				<td><div style = "width:<?=number_format($steps['steps']/$steps['goal'],3)*100?>%"></div></td>
+				<td><?=$steps['steps']?></td>
 			</tr>
 	<?php
 			}
@@ -48,7 +48,7 @@
 		foreach($value as $team => $status)
 		{
 	?>
-			<td><?=$team?></td><td><?=$status?></td></tr>
+			<td><?=$team?></td><td><div style = "width:<?=$status?>%;background: <?=$team?>;"></div></td></tr>
 	<?php
 		}
 	?>
